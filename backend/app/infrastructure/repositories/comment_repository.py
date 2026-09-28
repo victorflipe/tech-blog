@@ -35,11 +35,13 @@ class CommentRepository:
             self.db.rollback()
             raise ValueError(error)
         
-    def get_all_comments(self, article_data:Article) -> List[Comment]:
-        """Retorna todos os comentários com base no id do artigo"""
-        commets = self.db.query(ArticleModel).filter_by(id=article_id)
-        return comments
-        # return self.db.query(CommentModel).filter_by(article_id=article_data.id)
+    def get_all_comments(self, article_id: int) -> List[CommentModel]:
+        return (
+            self.db.query(CommentModel)
+            .filter_by(article_id=article_id)
+            .order_by(CommentModel.created_at.asc())
+            .all()
+        )
         
     def delete_comment(self, comment_id:int, user_id:int) -> bool:
         comment = self.db.query(CommentModel).filter(

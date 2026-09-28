@@ -1,4 +1,4 @@
-from sqlalchemy import desc
+from sqlalchemy import desc, or_
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from app.domain.article import Article
@@ -87,11 +87,46 @@ class ArticleRepository:
         
         return article.tags
     
-    def get_all_articles(self, skip:int, limit:int) -> list[ArticleModel]:
-        return self.db.query(ArticleModel).order_by(desc(ArticleModel.created_at)).offset(skip).limit(limit).all()
-    
-    def count_articles(self):
-        return self.db.query(ArticleModel).count()
+    def _articles_query(self, q: str | None = None, tags: str | None = None):
+        query = self.db.query(ArticleModel)
+        if q:
+            pattern = f"%{q.strip()}%"
+            query = query.filter(
+                or_(
+                    ArticleModel.title.ilike(pattern),
+                    ArticleModel.content.ilike(pattern),
+                )
+            )
+        if tags:
+            for raw in tags.split(","):
+                name = raw.strip()
+                if name:
+                    query = query.filter(
+                        ArticleModel.tags.any(TagModel.tag.ilike(name))
+                    )
+        return query
+
+    def get_all_articles(
+        self, skip: int, limit: int, q: str | None = None, tags: str | None = None
+    ) -> list[ArticleModel]:
+        return (
+            self._articles_query(q, tags)
+            .order_by(desc(ArticleModel.created_at))
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+    def count_articles(self, q: str | None = None, tags: str | None = None) -> int:
+        return self._articles_query(q, tags).count()
+
+    def delete(self, article_id: int) -> bool:
+        article = self.db.query(ArticleModel).filter_by(id=article_id).first()
+        if not article:
+            return False
+        self.db.delete(article)
+        self.db.commit()
+        return True
     
     def get_all_tags_to_article(self, article_id:int) -> Optional[list[TagModel]]:
         article_obj = self.db.query(ArticleModel).filter_by(id=article_id).first()

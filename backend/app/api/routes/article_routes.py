@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends, status, Query
 from fastapi.encoders import jsonable_encoder
 from app.domain.article import Article
@@ -108,15 +109,21 @@ def get_comments(article_id:int, common: CommonDeps = Depends(get_common_deps)):
     )
     
 @router.get("/")
-def get_all_articles(common: CommonDeps = Depends(get_common_deps), skip: int = Query(0, ge=0), limit: int = Query(10, ge=1, le=100)):
-    
+def get_all_articles(
+    common: CommonDeps = Depends(get_common_deps),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    q: Optional[str] = Query(None, description="Busca por título ou conteúdo"),
+    tags: Optional[str] = Query(None, description="Tags separadas por vírgula"),
+):
+
     """Função que retorna todos os Articles cadastrados"""
-    
+
     db = common.db
-    
+
     service = ArticleService(db=db)
-    result = service.get_all_articles(skip, limit)
-    total = service.count_articles()
+    result = service.get_all_articles(skip, limit, q, tags)
+    total = service.count_articles(q, tags)
     
     return response_success(
         data = [jsonable_encoder(article) for article in result],
@@ -193,4 +200,26 @@ def edit_article(article_id:int, article:ArticleCreate, common: CommonDeps = Dep
         return response_error(
             message=error.detail,
             status_code= error.status_code
+        )
+
+
+@router.delete("/{article_id}")
+def delete_article(article_id: int, common: CommonDeps = Depends(get_common_deps)):
+    """Exclui um artigo (somente o autor)."""
+
+    db = common.db
+    current_user = common.current_user
+
+    try:
+        ArticleService(db=db).delete_article(article_id, current_user.id)
+        return response_success(message="Artigo excluído com sucesso!")
+    except ValueError as error:
+        return response_error(
+            message=str(error),
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
+    except HTTPException as error:
+        return response_error(
+            message=error.detail,
+            status_code=error.status_code,
         )
