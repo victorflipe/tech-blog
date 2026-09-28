@@ -70,7 +70,7 @@ docker compose down -v
 DEV_RESET=1 docker compose up --build -d
 ```
 
-`DEV_RESET=1` faz `drop_all` antes de `create_all` no `init_db`.
+`DEV_RESET=1` faz `drop_all` antes de `alembic upgrade head` no `init_db`.
 
 ## Problemas comuns
 

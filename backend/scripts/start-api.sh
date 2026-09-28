@@ -10,9 +10,8 @@ with engine.connect() as conn:
   sleep 2
 done
 
-echo "Inicializando schema..."
+echo "Inicializando schema (Alembic)..."
 python -m app.infrastructure.init_db
-alembic upgrade head 2>/dev/null || true
 python -m app.crud.migrate
 
 echo "Subindo API..."
