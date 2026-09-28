@@ -8,10 +8,12 @@ import ArticleListItems from './ArticleListItems'
 import useFetch from '../../hooks/useFetch'
 import { GET_ARTICLES } from '../../api'
 import useForm from '../../hooks/useForm'
+import { UserContext } from '../../UserContext'
 
 const ArticleList = () => {
 
   const navigate = useNavigate()
+  const { login } = React.useContext(UserContext)
   const { request } = useFetch()
   const filter = useForm('')
 
@@ -47,7 +49,9 @@ const ArticleList = () => {
       <ArticleHeader>
         <div className="flex justify-between items-center py-2">
           <h1 className='text-3xl font-semibold'>{"Todos os Artigos"}</h1>
-          <Button onClick={() => navigate('/articles/new')}>Criar artigo</Button>
+          {login && (
+            <Button onClick={() => navigate('/articles/new')}>Criar artigo</Button>
+          )}
         </div>
       </ArticleHeader>
 

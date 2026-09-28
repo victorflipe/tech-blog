@@ -9,6 +9,7 @@ import { POST_ARTICLE, UPDATE_ARTICLE } from '../../api'
 import useFetch from '../../hooks/useFetch'
 import { useNavigate } from 'react-router-dom'
 import Modal from '../Modal/Modal'
+import MarkdownContent from '../Markdown/MarkdownContent'
 
 const ArticleForm = ({ article }) => {
 
@@ -20,12 +21,13 @@ const ArticleForm = ({ article }) => {
     const [isOpen, setIsOpen] = React.useState(false);
     const [message, setMessage] = React.useState('');
     const [tagsFiltered, setTagsFiltered] = React.useState([])
-    const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
+    const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768)
+    const [showPreview, setShowPreview] = React.useState(false)
 
     const titleHeader = !article ? "Novo artigo" : "Editar artigo"
     const textButton = !article ? "Criar artigo" : "Salvar artigo"
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (event) => {
         event.preventDefault()
         if(!title.validate() || !content.validate()){
             return
@@ -89,7 +91,22 @@ const ArticleForm = ({ article }) => {
                     <TagsList update={true} tagsSelectedArticle={article ? article.tags : []} setTagsFiltered={setTagsFiltered} />
                 </div>
 
-                <TextArea label="Conteúdo *" name="conteúdo" placeholder="Escreva aqui seu artigo" {...content} />
+                <TextArea label="Conteúdo * (Markdown)" name="conteúdo" placeholder="Escreva aqui seu artigo" {...content} />
+
+                <div className="mb-5">
+                    <button
+                        type="button"
+                        className="text-[#67A22D] font-semibold underline cursor-pointer"
+                        onClick={() => setShowPreview((prev) => !prev)}
+                    >
+                        {showPreview ? 'Ocultar preview' : 'Preview Markdown'}
+                    </button>
+                    {showPreview && (
+                        <div className="mt-3 p-4 border border-[#EDF2E8] rounded-xl">
+                            <MarkdownContent>{content.value}</MarkdownContent>
+                        </div>
+                    )}
+                </div>
 
                 {isMobile && <Button classButton={"w-full"} onClick={handleSubmit}>{textButton}</Button>}
             </form>

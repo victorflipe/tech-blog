@@ -9,8 +9,6 @@ import Article from './components/Article/Article'
 import './App.css'
 import { UserStorage } from './UserContext'
 import NotFound from './components/NotFound'
-import ProtectedRoutes from './components/Helper/ProtectedRoutes'
-
 function App() {
 
   return (
@@ -22,7 +20,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login/*" element={<Login />} />
-              <Route path="/articles/*" element={<ProtectedRoutes><Article /></ProtectedRoutes>} />
+              <Route path="/articles/*" element={<Article />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

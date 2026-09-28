@@ -12,6 +12,8 @@ from app.utils.api_response import response_error, response_success
 # from app.schemas.user_schema import UserRead
 # from app.api.auth import get_current_user
 from app.api.dependency import CommonDeps, get_common_deps
+from app.infrastructure.database import open_session
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/articles", tags=["articles"])
 
@@ -87,11 +89,9 @@ def create_comment(article_id:int, comment:CommentCreate, common: CommonDeps = D
         )
     
 @router.get("/{article_id}/comments", response_model = list[CommentRead])
-def get_comments(article_id:int, common: CommonDeps = Depends(get_common_deps)):
+def get_comments(article_id: int, db: Session = Depends(open_session)):
     
-    """Pega todos os comentários vinculados ao artigo"""
-    
-    db = common.db
+    """Pega todos os comentários vinculados ao artigo (público)."""
     
     article_service = ArticleService(db=db)
     article = article_service.check_article(article_id=article_id)
@@ -110,16 +110,15 @@ def get_comments(article_id:int, common: CommonDeps = Depends(get_common_deps)):
     
 @router.get("/")
 def get_all_articles(
-    common: CommonDeps = Depends(get_common_deps),
+    db: Session = Depends(open_session),
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
     q: Optional[str] = Query(None, description="Busca por título ou conteúdo"),
     tags: Optional[str] = Query(None, description="Tags separadas por vírgula"),
 ):
 
-    """Função que retorna todos os Articles cadastrados"""
+    """Lista artigos (leitura pública)."""
 
-    db = common.db
 
     service = ArticleService(db=db)
     result = service.get_all_articles(skip, limit, q, tags)
@@ -136,10 +135,8 @@ def get_all_articles(
     )
 
 @router.get("/{article_id}")
-def get_article_by_id(article_id: int, common: CommonDeps = Depends(get_common_deps)):
-    """Retorna um artigo pelo id"""
-
-    db = common.db
+def get_article_by_id(article_id: int, db: Session = Depends(open_session)):
+    """Retorna um artigo pelo id (leitura pública)."""
     service = ArticleService(db=db)
 
     try:

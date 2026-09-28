@@ -4,6 +4,23 @@ from app.infrastructure.models.user_model import UserModel
 from app.tests.conftest import auth_header
 
 
+def test_list_comments_public(client: TestClient, author_user: UserModel):
+    headers = auth_header(client, author_user.email)
+    create = client.post(
+        "/articles/",
+        headers=headers,
+        json={
+            "title": "Artigo publico comentarios",
+            "content": "conteudo",
+            "image": "",
+            "tags": [],
+        },
+    )
+    article_id = create.json()["data"]["id"]
+    response = client.get(f"/articles/{article_id}/comments")
+    assert response.status_code == 200
+
+
 def test_comment_thread(client: TestClient, author_user: UserModel):
     headers = auth_header(client, author_user.email)
     create = client.post(
