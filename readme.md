@@ -196,11 +196,5 @@ backend
 └── vite.config.js
 ```
 
-## Acessando a aplicação
-
-Para acessar a aplicação, basta pegar um usuário que está no json para popular o banco e fazer o seguinte:
-
-- Utilize o primeiro nome + segundo nome + "@teste.com". (Exemplo: victorfelipe@teste.com)
-- A senha para todos os usuários do json é "teste"
 
 
