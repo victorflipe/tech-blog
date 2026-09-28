@@ -10,7 +10,7 @@ const LoginForm = () => {
 
     const email = useForm()
     const password = useForm()
-    const { userLogin, error, loading, data, login } = React.useContext(UserContext)
+    const { userLogin, error } = React.useContext(UserContext)
     const [message, setMessage] = React.useState('')
     const [isOpen, setIsOpen] = React.useState(false);
 
@@ -27,7 +27,7 @@ const LoginForm = () => {
                     setIsOpen(true)
                 }
             }
-        }catch(error){
+        } catch {
             setMessage('Erro ao efetuar login')
             setIsOpen(true)
         }

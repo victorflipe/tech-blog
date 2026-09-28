@@ -21,7 +21,7 @@ const ArticleForm = ({ article }) => {
     const [isOpen, setIsOpen] = React.useState(false);
     const [message, setMessage] = React.useState('');
     const [tagsFiltered, setTagsFiltered] = React.useState([])
-    const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768)
+    const [isMobile] = React.useState(() => window.innerWidth <= 768)
     const [showPreview, setShowPreview] = React.useState(false)
 
     const titleHeader = !article ? "Novo artigo" : "Editar artigo"
