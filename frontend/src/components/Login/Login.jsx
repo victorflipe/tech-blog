@@ -1,6 +1,7 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import LoginForm from './LoginForm'
+import RegisterForm from './RegisterForm'
 import NotFound from '../NotFound'
 
 const Login = () => {
@@ -8,6 +9,7 @@ const Login = () => {
         <section className='mainContainer'>
             <Routes>
                 <Route path="/" element={<LoginForm />} />
+                <Route path="/register" element={<RegisterForm />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </section>

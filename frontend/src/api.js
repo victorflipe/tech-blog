@@ -20,6 +20,19 @@ export const LOGIN_USER = (body) => {
     }
 }
 
+export const REGISTER_USER = (body) => {
+    return {
+        url: API_URL + '/users/',
+        options: {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body),
+        },
+    }
+}
+
 export const GET_USER = () => {
     return {
         url: API_URL + '/users/getuser',
@@ -41,9 +54,12 @@ export const GET_TAGS = () => {
     }
 }
 
-export const GET_ARTICLES = (skip, limit) => {
+export const GET_ARTICLES = (skip, limit, { q, tags } = {}) => {
+    const params = new URLSearchParams({ skip: String(skip), limit: String(limit) })
+    if (q) params.set('q', q)
+    if (tags) params.set('tags', tags)
     return {
-        url: API_URL + `/articles?skip=${skip}&limit=${limit}`,
+        url: API_URL + `/articles?${params.toString()}`,
         options: {
             method: 'get',
             headers: {
@@ -58,6 +74,18 @@ export const GET_ARTICLE = (articleId) => {
         url: API_URL + `/articles/${articleId}`,
         options: {
             method: 'get',
+            headers: {
+                ...authHeaders(),
+            },
+        },
+    }
+}
+
+export const DELETE_ARTICLE = (articleId) => {
+    return {
+        url: API_URL + `/articles/${articleId}`,
+        options: {
+            method: 'delete',
             headers: {
                 ...authHeaders(),
             },

@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import Button from '../Forms/Button'
 import useForm from '../../hooks/useForm'
 import Input from '../Forms/Input'
@@ -42,9 +43,10 @@ const LoginForm = () => {
                     <Input label={"Email"} name="email" {...email} placeholder="Email" h={"h-[2rem]"}/>
                     <Input label={"Senha"} name="senha" {...password} placeholder="Senha" h={"h-[2rem]"}/>
                     <Button classButton={"w-full"}>Entrar</Button>
-
-                    {/* <Error error={error && "Usuário ou senha inválidos"} /> */}
                 </form>
+                <p className="text-center mt-4">
+                    Não tem conta? <Link to="/login/register" className="underline">Cadastre-se</Link>
+                </p>
             </div>
 
             {isOpen && <Modal onClose={() => setIsOpen(false)} >
