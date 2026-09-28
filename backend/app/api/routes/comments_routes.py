@@ -21,8 +21,7 @@ def delete_comment(comment_id:int, common: CommonDeps = Depends(get_common_deps)
         
         comment_service = CommentService(db=db)
         result_delete = comment_service.delete_comment(comment_id, user_id=current_user.id)
-        print(f'resultado: {result_delete}')
-        
+
         if not result_delete:
             return response_error(
             message="Comentário não encontrado!"

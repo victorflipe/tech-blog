@@ -2,7 +2,7 @@ import React from 'react'
 import useFetch from '../../hooks/useFetch'
 import { GET_TAGS } from '../../api'
 
-const TagsList = ({ isActive, tagsArticle, tagsSelectedArticle = [], setTagsFiltered, update = false }) => {
+const TagsList = ({ tagsArticle, tagsSelectedArticle = [], setTagsFiltered, update = false }) => {
     const { request } = useFetch()
     const [tags, setTags] = React.useState([])
     const [tagsSelected, setTagsSelected] = React.useState([...tagsSelectedArticle])
@@ -15,7 +15,7 @@ const TagsList = ({ isActive, tagsArticle, tagsSelectedArticle = [], setTagsFilt
         }
 
         async function fetchTags() {
-            const { url, options } = GET_TAGS('')
+            const { url, options } = GET_TAGS()
             const { json } = await request(url, options)
             setTags(json.data)
         }

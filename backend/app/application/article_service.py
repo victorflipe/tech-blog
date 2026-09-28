@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from app.domain.article import Article
 from app.domain.tag import Tag
@@ -95,11 +96,11 @@ class ArticleService:
         
         """Retorna o artigo com base no id"""
         
-        article = self.repository.find(id)
+        article = self.repository.check_article(id)
         
         if not article:
-            raise ValueError("Article not found")
-        return article
+            raise ValueError("Artigo não encontrado")
+        return ArticleRead.model_validate(article)
         
     def get_all_tags_to_article(self, article_id:int) -> list[Tag] | None:
 
@@ -122,14 +123,16 @@ class ArticleService:
     
         return self.repository.add_tags_to_article(article_id, list_tags)
     
-    def count_articles(self):
-        return self.repository.count_articles()
-    
-    def get_all_articles(self, skip, limit) -> list[ArticleRead]:
-    
+    def count_articles(self, q: str | None = None, tags: str | None = None):
+        return self.repository.count_articles(q, tags)
+
+    def get_all_articles(
+        self, skip, limit, q: str | None = None, tags: str | None = None
+    ) -> list[ArticleRead]:
+
         """Retorna uma lista com todos os registros de Article"""
-    
-        all_articles = self.repository.get_all_articles(skip, limit)
+
+        all_articles = self.repository.get_all_articles(skip, limit, q, tags)
         
         articles_treated = []
         for article in all_articles:
@@ -149,15 +152,43 @@ class ArticleService:
         article = self.repository.check_article(article_id)
         return article
     
-    def get_all_comments(self, article_id:int) -> list[CommentRead]:
-        
-        comments = self.repository.get_all_comments(article_id)
-        comments_treated = []
-        
-        for comment in comments:
-            comments_treated.append(
-                CommentRead.model_validate(comment)
+    def delete_article(self, article_id: int, user_id: int) -> None:
+        existing = self.check_article(article_id)
+        if not existing:
+            raise ValueError("Artigo não encontrado")
+        if existing.author_id != user_id:
+            raise HTTPException(
+                status_code=403,
+                detail="Sem permissão para excluir este artigo",
             )
-        
-        return comments_treated
-    
+        if not self.repository.delete(article_id):
+            raise ValueError("Artigo não encontrado")
+
+    def get_all_comments(self, article_id: int) -> list[CommentRead]:
+        comments = self.repository.get_all_comments(article_id)
+        return self._build_comment_tree(comments)
+
+    def _build_comment_tree(self, comments) -> list[CommentRead]:
+        if not comments:
+            return []
+
+        nodes: dict[int, CommentRead] = {}
+        for comment in comments:
+            node = CommentRead.model_validate(
+                comment, from_attributes=True
+            ).model_copy(update={"replies": []})
+            nodes[comment.id] = node
+
+        roots: list[CommentRead] = []
+        for comment in comments:
+            node = nodes[comment.id]
+            parent_id = comment.parent_comment_id
+            if parent_id and parent_id in nodes:
+                nodes[parent_id].replies.append(node)
+            else:
+                roots.append(node)
+
+        roots.sort(key=lambda c: c.created_at, reverse=True)
+        for node in nodes.values():
+            node.replies.sort(key=lambda c: c.created_at)
+        return roots

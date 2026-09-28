@@ -35,3 +35,34 @@
 .icons{
   @apply cursor-pointer hover:fill-[#67A22D]
 }
+
+.article-markdown {
+  @apply text-[#1a1a1a] leading-relaxed;
+}
+
+.article-markdown h1,
+.article-markdown h2,
+.article-markdown h3 {
+  @apply font-semibold mt-4 mb-2;
+}
+
+.article-markdown p {
+  @apply mb-3;
+}
+
+.article-markdown ul,
+.article-markdown ol {
+  @apply list-disc pl-6 mb-3;
+}
+
+.article-markdown code {
+  @apply bg-[#EDF2E8] px-1 rounded text-sm;
+}
+
+.article-markdown pre {
+  @apply bg-[#EDF2E8] p-3 rounded overflow-x-auto mb-3;
+}
+
+.article-markdown a {
+  @apply text-[#67A22D] underline;
+}

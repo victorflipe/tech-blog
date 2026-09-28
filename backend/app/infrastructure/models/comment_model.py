@@ -20,5 +20,16 @@ class CommentModel(BaseModel):
     
     author = relationship("UserModel", back_populates="comments")
     article = relationship("ArticleModel", back_populates="comments")
-    replies = relationship("CommentModel", cascade="all, delete-orphan", single_parent=True, remote_side=[id])
+    parent = relationship(
+        "CommentModel",
+        remote_side=[id],
+        back_populates="replies",
+        foreign_keys=[parent_comment_id],
+    )
+    replies = relationship(
+        "CommentModel",
+        back_populates="parent",
+        cascade="all, delete-orphan",
+        foreign_keys=[parent_comment_id],
+    )
     

@@ -1,21 +1,23 @@
 import React from 'react'
-import Button from '../Forms/Button'
-import ArticleHeader from './ArticleHeader'
-import Input from '../Forms/Input'
 import ArticleForm from './ArticleForm'
-import { useLocation } from 'react-router-dom';
+import useArticle from '../../hooks/useArticle'
 
 const ArticleEdit = () => {
+    const { article, loading } = useArticle()
 
-  const location = useLocation();
-  const { article } = location.state || {};
+    if (loading) {
+        return <p className="p-10 text-center">Carregando artigo...</p>
+    }
 
-  return (
-    <section>
-      {/* <ArticleForm onSubmit={handleSubmit} /> */}
-      <ArticleForm article={article} />
-    </section>
-  )
+    if (!article) {
+        return <p className="p-10 text-center">Artigo não encontrado.</p>
+    }
+
+    return (
+        <section>
+            <ArticleForm article={article} />
+        </section>
+    )
 }
 
 export default ArticleEdit

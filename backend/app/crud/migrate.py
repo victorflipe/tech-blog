@@ -6,6 +6,7 @@ from app.application.article_service import ArticleService
 from app.application.tag_service import TagService
 from app.schemas.user_schema import UserCreate
 from app.schemas.article_schema import ArticleCreate
+from app.infrastructure.models.article_model import ArticleModel
 
 def migrate_articles():
     json_path = Path(__file__).parent.parent / "data" / "articles.json"
@@ -16,6 +17,10 @@ def migrate_articles():
     db = localSession()
 
     try:
+        if db.query(ArticleModel).count() > 0:
+            print("Seed ignorado: banco já contém artigos.")
+            return
+
         user_service = UserService(db)
         article_service = ArticleService(db)
         tag_service = TagService(db)

@@ -1,0 +1,13 @@
+{
+  "owner": "victorflipe",
+  "repo": "tech-blog",
+  "projectTitle": "TechBlog — Backlog & Tasks",
+  "projectNumber": null,
+  "statusFieldName": "Status",
+  "statusOptions": {
+    "todo": "Todo",
+    "in_progress": "In Progress",
+    "in_review": "In Review",
+    "done": "Done"
+  }
+}

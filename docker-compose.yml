@@ -6,9 +6,16 @@ services:
     env_file:
       - backend/.env
     ports:
-      - "5432:5432"
+      # Host 5434 evita conflito se já houver Postgres em 5432. Ajuste para "5432:5432" se a porta estiver livre.
+      - "5434:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d techblog"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
   
   api:
     build:
@@ -17,15 +24,26 @@ services:
     container_name: techblog_api
     env_file:
       - backend/.env
+    environment:
+      DEBUG: "true"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "8000:8000"
-    command: >
-      sh -c "python -m app.infrastructure.init_db && alembic upgrade head || true && python -m app.crud.migrate && uvicorn app.main:app
-      --host 0.0.0.0 --port 8000 --reload --log-level debug"
+    command: ["sh", "scripts/start-api.sh"]
     volumes:
       - ./backend:/backend
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')\"",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
 
   frontend:
     build:
@@ -33,7 +51,10 @@ services:
       dockerfile: Dockerfile
     container_name: techblog_frontend
     depends_on:
-      - api
+      api:
+        condition: service_healthy
+    environment:
+      VITE_API_URL: http://localhost:8000
     ports:
       - "5173:5173"
     volumes:

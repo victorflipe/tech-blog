@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends, status, Query
 from fastapi.encoders import jsonable_encoder
 from app.domain.article import Article
@@ -11,6 +12,8 @@ from app.utils.api_response import response_error, response_success
 # from app.schemas.user_schema import UserRead
 # from app.api.auth import get_current_user
 from app.api.dependency import CommonDeps, get_common_deps
+from app.infrastructure.database import open_session
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/articles", tags=["articles"])
 
@@ -86,11 +89,9 @@ def create_comment(article_id:int, comment:CommentCreate, common: CommonDeps = D
         )
     
 @router.get("/{article_id}/comments", response_model = list[CommentRead])
-def get_comments(article_id:int, common: CommonDeps = Depends(get_common_deps)):
+def get_comments(article_id: int, db: Session = Depends(open_session)):
     
-    """Pega todos os comentários vinculados ao artigo"""
-    
-    db = common.db
+    """Pega todos os comentários vinculados ao artigo (público)."""
     
     article_service = ArticleService(db=db)
     article = article_service.check_article(article_id=article_id)
@@ -108,15 +109,20 @@ def get_comments(article_id:int, common: CommonDeps = Depends(get_common_deps)):
     )
     
 @router.get("/")
-def get_all_articles(common: CommonDeps = Depends(get_common_deps), skip: int = Query(0, ge=0), limit: int = Query(10, ge=1, le=100)):
-    
-    """Função que retorna todos os Articles cadastrados"""
-    
-    db = common.db
-    
+def get_all_articles(
+    db: Session = Depends(open_session),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    q: Optional[str] = Query(None, description="Busca por título ou conteúdo"),
+    tags: Optional[str] = Query(None, description="Tags separadas por vírgula"),
+):
+
+    """Lista artigos (leitura pública)."""
+
+
     service = ArticleService(db=db)
-    result = service.get_all_articles(skip, limit)
-    total = service.count_articles()
+    result = service.get_all_articles(skip, limit, q, tags)
+    total = service.count_articles(q, tags)
     
     return response_success(
         data = [jsonable_encoder(article) for article in result],
@@ -127,6 +133,20 @@ def get_all_articles(common: CommonDeps = Depends(get_common_deps), skip: int = 
             "pages": (total // limit) + (1 if total % limit else 0)
         }
     )
+
+@router.get("/{article_id}")
+def get_article_by_id(article_id: int, db: Session = Depends(open_session)):
+    """Retorna um artigo pelo id (leitura pública)."""
+    service = ArticleService(db=db)
+
+    try:
+        article = service.get_article(article_id)
+        return response_success(data=jsonable_encoder(article))
+    except ValueError:
+        return response_error(
+            message="Artigo não encontrado",
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
     
 @router.put("/{article_id}", response_model = ArticleRead)
 def edit_article(article_id:int, article:ArticleCreate, common: CommonDeps = Depends(get_common_deps)) -> ArticleRead:
@@ -137,17 +157,30 @@ def edit_article(article_id:int, article:ArticleCreate, common: CommonDeps = Dep
     current_user = common.current_user
     
     try:
-        
+        article_service = ArticleService(db=db)
+        existing = article_service.check_article(article_id)
+
+        if not existing:
+            return response_error(
+                message="Artigo não encontrado",
+                status_code=status.HTTP_404_NOT_FOUND,
+            )
+
+        if existing.author_id != current_user.id:
+            return response_error(
+                message="Sem permissão para editar este artigo",
+                status_code=status.HTTP_403_FORBIDDEN,
+            )
+
         article_obj = Article(
             id = article_id,
             title = article.title,
             content = article.content,
             image = article.image,
-            author_id = current_user.id,
+            author_id = existing.author_id,
             tags = article.tags
         )
-        
-        article_service = ArticleService(db=db)
+
         article_updated = article_service.update_article(article_data = article_obj)
         
         return response_success(
@@ -157,11 +190,33 @@ def edit_article(article_id:int, article:ArticleCreate, common: CommonDeps = Dep
         
     except ValueError as error:
         return response_error(
-            message=error.detail,
-            status_code= error.status_code
+            message=str(error),
+            status_code=status.HTTP_400_BAD_REQUEST,
         )
     except HTTPException as error:
         return response_error(
             message=error.detail,
             status_code= error.status_code
+        )
+
+
+@router.delete("/{article_id}")
+def delete_article(article_id: int, common: CommonDeps = Depends(get_common_deps)):
+    """Exclui um artigo (somente o autor)."""
+
+    db = common.db
+    current_user = common.current_user
+
+    try:
+        ArticleService(db=db).delete_article(article_id, current_user.id)
+        return response_success(message="Artigo excluído com sucesso!")
+    except ValueError as error:
+        return response_error(
+            message=str(error),
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
+    except HTTPException as error:
+        return response_error(
+            message=error.detail,
+            status_code=error.status_code,
         )
