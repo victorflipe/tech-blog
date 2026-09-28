@@ -5,6 +5,12 @@ Projeto MVP para Compartilhamento de Artigos onde é possível:
 - Comentar nos artigos 
 - E fazer a busca por TAGs ou pelo título dos artigos
 
+## Visão geral
+
+Do navegador ao banco: o pedido passa por React/Vite, FastAPI, a camada de services e o SQLAlchemy até o PostgreSQL 16.
+
+![Fluxo da aplicação TechBlog](docs/screenshots/infografico-techblog.png)
+
 ## Tecnologias utilizadas
 - **FastAPI** – Backend em Python
 - **Postgres** – Banco de dados relacional
