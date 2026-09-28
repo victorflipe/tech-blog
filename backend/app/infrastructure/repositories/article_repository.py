@@ -41,9 +41,9 @@ class ArticleRepository:
         article_found = self.db.query(ArticleModel).filter_by(id=article.id).first()
             
         if article_found:
-            article_found.title = article.title,
-            article_found.content = article.content,
-            article_found.image = article.image,
+            article_found.title = article.title
+            article_found.content = article.content
+            article_found.image = article.image
         
             self.db.flush()
             self.save_data(article_found)

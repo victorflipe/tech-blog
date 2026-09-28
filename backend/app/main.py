@@ -1,8 +1,12 @@
+import os
+import traceback
+
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-import traceback 
 from .api.routes import article_routes, user_routes, tag_routes, comments_routes, login_routes
+
+DEBUG = os.getenv("DEBUG", "true").lower() in ("1", "true", "yes")
 
 app = FastAPI(title="TechBlog API", version="1.0")
 
@@ -24,13 +28,10 @@ async def catch_exceptions_middleware(request: Request, call_next):
     try:
         return await call_next(request)
     except Exception as e:
-        return JSONResponse(
-            status_code=500,
-            content={
-                "error": str(e),
-                "trace": traceback.format_exc().splitlines()  # detalhe do erro
-            },
-        )
+        content = {"message": "Erro interno do servidor", "details": str(e)}
+        if DEBUG:
+            content["trace"] = traceback.format_exc().splitlines()
+        return JSONResponse(status_code=500, content=content)
 
 app.include_router(article_routes.router)
 app.include_router(user_routes.router)

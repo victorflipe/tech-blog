@@ -1,146 +1,132 @@
-export const API_URL = 'http://localhost:8000'
-const TOKEN = window.localStorage.getItem('token')
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
-export const LOGIN_USER = (body) => {
+const getToken = () => window.localStorage.getItem('token')
 
-    return {
-        url: API_URL + "/login/",
-        options: {
-            method: "post",
-            headers: {
-                'Content-Type': "application/json"
-            },
-            body: JSON.stringify(body)
-        }
-    }
+const authHeaders = () => {
+    const token = getToken()
+    return token ? { Authorization: 'Bearer ' + token } : {}
 }
 
-export const TOKEN_VALIDATE_POST = (token) => {
-
+export const LOGIN_USER = (body) => {
     return {
-        url: API_URL + "/jwt-auth/v1/token/validate",
+        url: API_URL + '/login/',
         options: {
-            method: "post",
+            method: 'post',
             headers: {
-                Authorization: "Bearer " + token
-            }
-        }
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body),
+        },
     }
 }
 
 export const GET_USER = () => {
-
     return {
-        url: API_URL + "/users/getuser",
+        url: API_URL + '/users/getuser',
         options: {
-            method: "get",
+            method: 'get',
             headers: {
-                Authorization: "Bearer " + TOKEN
-            }
-        }
+                ...authHeaders(),
+            },
+        },
     }
 }
 
-export const GET_TAGS = (token) => {
-
+export const GET_TAGS = () => {
     return {
-        url: API_URL + "/tags/",
+        url: API_URL + '/tags/',
         options: {
-            method: "get",
-            // headers: {
-            //     Authorization: "Bearer " + token
-            // }
-        }
+            method: 'get',
+        },
     }
 }
 
 export const GET_ARTICLES = (skip, limit) => {
-
     return {
         url: API_URL + `/articles?skip=${skip}&limit=${limit}`,
         options: {
-            method: "get",
+            method: 'get',
             headers: {
-                Authorization: "Bearer " + TOKEN
-            }
-        }
+                ...authHeaders(),
+            },
+        },
+    }
+}
+
+export const GET_ARTICLE = (articleId) => {
+    return {
+        url: API_URL + `/articles/${articleId}`,
+        options: {
+            method: 'get',
+            headers: {
+                ...authHeaders(),
+            },
+        },
     }
 }
 
 export const GET_COMMENTS = (articleId) => {
-
     return {
         url: API_URL + `/articles/${articleId}/comments`,
         options: {
-            method: "get",
+            method: 'get',
             headers: {
-                Authorization: "Bearer " + TOKEN
-            }
-        }
+                ...authHeaders(),
+            },
+        },
     }
 }
 
 export const POST_COMMENT = (articleId, body) => {
-
     return {
         url: API_URL + `/articles/${articleId}/comments`,
         options: {
-            method: "post",
+            method: 'post',
             headers: {
-                Authorization: "Bearer " + TOKEN,
-                'Content-Type': "application/json"
+                ...authHeaders(),
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(body)
-        }
+            body: JSON.stringify(body),
+        },
     }
 }
 
 export const DELETE_COMMENT = (commentId) => {
-
     return {
         url: API_URL + `/comments/${commentId}`,
         options: {
-            method: "delete",
+            method: 'delete',
             headers: {
-                Authorization: "Bearer " + TOKEN,
-                'Content-Type': "application/json"
+                ...authHeaders(),
             },
-            // body: JSON.stringify(body)
-        }
+        },
     }
 }
 
 export const POST_ARTICLE = (body) => {
-
     return {
-        url: API_URL + `/articles/`,
+        url: API_URL + '/articles/',
         options: {
-            method: "post",
+            method: 'post',
             headers: {
-                Authorization: "Bearer " + TOKEN,
-                'Content-Type': "application/json"
+                ...authHeaders(),
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(body)
-        }
+            body: JSON.stringify(body),
+        },
     }
 }
 
 export const UPDATE_ARTICLE = (articleId, body) => {
-
     return {
         url: API_URL + `/articles/${articleId}`,
         options: {
-            method: "put",
+            method: 'put',
             headers: {
-                Authorization: "Bearer " + TOKEN,
-                'Content-Type': "application/json"
+                ...authHeaders(),
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(body)
-        }
+            body: JSON.stringify(body),
+        },
     }
 }
-
-
-
-
-

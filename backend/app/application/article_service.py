@@ -95,11 +95,11 @@ class ArticleService:
         
         """Retorna o artigo com base no id"""
         
-        article = self.repository.find(id)
+        article = self.repository.check_article(id)
         
         if not article:
-            raise ValueError("Article not found")
-        return article
+            raise ValueError("Artigo não encontrado")
+        return ArticleRead.model_validate(article)
         
     def get_all_tags_to_article(self, article_id:int) -> list[Tag] | None:
 

@@ -1,18 +1,15 @@
 import React from 'react'
-import { GET_TAGS, GET_USER, LOGIN_USER } from './api'
+import { GET_USER, LOGIN_USER } from './api'
 import { useNavigate } from 'react-router-dom'
 
 export const UserContext = React.createContext()
 
-
 export const UserStorage = ({ children }) => {
-
     const [data, setData] = React.useState(null)
     const [login, setLogin] = React.useState(null)
     const [loading, setLoading] = React.useState(false)
     const [error, setError] = React.useState(null)
     const navigate = useNavigate()
-
 
     const userLogout = React.useCallback(async () => {
         setData(null)
@@ -30,11 +27,9 @@ export const UserStorage = ({ children }) => {
                 try {
                     setError(null)
                     setLoading(true)
-
                     await getUser()
-
-                } catch (error) {
-                    setError(error.message)
+                } catch (err) {
+                    setError(err.message)
                     userLogout()
                 } finally {
                     setLoading(false)
@@ -46,48 +41,42 @@ export const UserStorage = ({ children }) => {
         autoLogin()
     }, [])
 
-
-
     const getUser = async () => {
         const { url, options } = GET_USER()
         const response = await fetch(url, options)
         const json = await response.json()
+
+        if (!response.ok) {
+            throw new Error(json.message || 'Sessão inválida')
+        }
+
         setData(json)
         setLogin(true)
     }
 
     const userLogin = async (email, password) => {
         try {
-
             setError(null)
             setLoading(true)
 
             const { url, options } = LOGIN_USER({ email, password })
             const response = await fetch(url, options)
-            // const response = await data.json()
-            let { data } = await response.json()
-            
+            const json = await response.json()
+
             if (!response.ok) {
-                const message = data.detail || "Credenciais inválidas. Tente novamente";
-                // setError
-                throw new Error(message)
+                throw new Error(json.message || 'Credenciais inválidas. Tente novamente')
             }
 
-            window.localStorage.setItem('token', data.access_token)
-
+            window.localStorage.setItem('token', json.data.access_token)
             await getUser()
-
             navigate('/articles')
-
-        } catch (error) {
-            setError(error.message)
+        } catch (err) {
+            setError(err.message)
             setLogin(false)
         } finally {
             setLoading(false)
         }
     }
-
-
 
     return (
         <UserContext.Provider value={{ userLogin, userLogout, data, error, loading, login }}>

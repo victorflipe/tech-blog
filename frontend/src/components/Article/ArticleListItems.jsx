@@ -15,7 +15,7 @@ const ArticleListItems = ({ articles }) => {
         <section>
             {articles.map((article) => (
                 <div className='w-auto flex' key={article.id}>
-                    <Link to="read" className='flex-1' state={{ article: article }} >
+                    <Link to={`/${article.id}`} className='flex-1' state={{ article: article }} >
                         <div className='flex mb-2 my-8'>
                             <img
                                 className="md:w-32 md:h-26 h-12 w-12 object-cover rounded-xl"
@@ -45,7 +45,7 @@ const ArticleListItems = ({ articles }) => {
                         </div>
                     </Link>
                     {article ? article.author.id == user.id && <div className='flex items-center'>
-                        <Link to="edit" state={{ article: article }}>
+                        <Link to={`/${article.id}/edit`} state={{ article: article }}>
                             <img src={IconEdit} alt="edit article" />
                         </Link>
                     </div> : <></>}

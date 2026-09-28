@@ -21,37 +21,70 @@ git clone https://github.com/victorflipe/challenge-gd.git
 cd challenge-gd
 ```
 
-2. Execute os containers
+2. Configure o ambiente da API:
 ```bash
-docker-compose up --build -d
+cp backend/.env.example backend/.env
+```
+Edite `backend/.env` se necessário (senha do Postgres, `SECRET_KEY`).
+
+3. Execute os containers
+```bash
+docker compose up --build -d
 ```
 
 Isso irá executar:
-- A criação dos dados do arquivo json
-- O banco de dados na porta 5432
-- O backend FastAPI na porta 8000
-- O frontend no Vite na porta 5173
+- Healthcheck do Postgres antes de subir a API
+- Criação das tabelas e seed idempotente (`articles.json`)
+- Backend FastAPI na porta **8000**
+- Frontend Vite na porta **5173**
+- Postgres no host na porta **5434** (mapeamento `5434→5432` no container; evita conflito se já existir Postgres em 5432)
 
-3. Acesse o frontend pelo endereço:
+Para expor Postgres em **5432** no host, altere `docker-compose.yml` para `"5432:5432"` quando a porta estiver livre.
+
+4. Acesse o frontend pelo endereço:
 ```bash
 http://localhost:5173
 ```
 
-4. Acesse a documentação da API em:
+5. Acesse a documentação da API em:
 ```bash
 http://localhost:8000/docs
 ```
+
+### Reset completo do banco (desenvolvimento)
+
+```bash
+docker compose down -v
+# No serviço api, defina DEV_RESET=1 no .env ou environment para drop_all no init_db
+docker compose up --build -d
+```
+
+## Testes smoke (Fase 1)
+
+- **E2E no browser (MCP Playwright no Cursor):** ver [docs/SMOKE_E2E.md](docs/SMOKE_E2E.md)
+- **API (403 autorização, GET artigo):** com o stack no ar:
+
+```bash
+docker exec -e RUN_INTEGRATION=1 techblog_api pytest app/tests/test_phase1_integration.py -v
+```
+
+Ou no host: `pip install pytest httpx` e `RUN_INTEGRATION=1 pytest app/tests/test_phase1_integration.py -v` dentro de `backend/`.
 
 Comandos úteis
 
 - Para todos os containers
 ```bash
-docker-compose down
+docker compose down
 ```
 
 - Sobe todos os containers
 ```bash
-docker-compose up --build -d
+docker compose up --build -d
+```
+
+- Logs da API (seed / erros)
+```bash
+docker logs techblog_api -f
 ```
 
 ## Estrutura do Projeto
@@ -80,6 +113,8 @@ backend
 │ ├── utils
 │ └── main.py
 ├── .env
+├── .env.example
+├── scripts/start-api.sh
 ├── alembic.ini
 ├── Dockerfile
 └── requirements.txt

@@ -15,7 +15,7 @@ const TagsList = ({ isActive, tagsArticle, tagsSelectedArticle = [], setTagsFilt
         }
 
         async function fetchTags() {
-            const { url, options } = GET_TAGS('')
+            const { url, options } = GET_TAGS()
             const { json } = await request(url, options)
             setTags(json.data)
         }

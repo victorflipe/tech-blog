@@ -127,6 +127,22 @@ def get_all_articles(common: CommonDeps = Depends(get_common_deps), skip: int = 
             "pages": (total // limit) + (1 if total % limit else 0)
         }
     )
+
+@router.get("/{article_id}")
+def get_article_by_id(article_id: int, common: CommonDeps = Depends(get_common_deps)):
+    """Retorna um artigo pelo id"""
+
+    db = common.db
+    service = ArticleService(db=db)
+
+    try:
+        article = service.get_article(article_id)
+        return response_success(data=jsonable_encoder(article))
+    except ValueError:
+        return response_error(
+            message="Artigo não encontrado",
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
     
 @router.put("/{article_id}", response_model = ArticleRead)
 def edit_article(article_id:int, article:ArticleCreate, common: CommonDeps = Depends(get_common_deps)) -> ArticleRead:
@@ -137,17 +153,30 @@ def edit_article(article_id:int, article:ArticleCreate, common: CommonDeps = Dep
     current_user = common.current_user
     
     try:
-        
+        article_service = ArticleService(db=db)
+        existing = article_service.check_article(article_id)
+
+        if not existing:
+            return response_error(
+                message="Artigo não encontrado",
+                status_code=status.HTTP_404_NOT_FOUND,
+            )
+
+        if existing.author_id != current_user.id:
+            return response_error(
+                message="Sem permissão para editar este artigo",
+                status_code=status.HTTP_403_FORBIDDEN,
+            )
+
         article_obj = Article(
             id = article_id,
             title = article.title,
             content = article.content,
             image = article.image,
-            author_id = current_user.id,
+            author_id = existing.author_id,
             tags = article.tags
         )
-        
-        article_service = ArticleService(db=db)
+
         article_updated = article_service.update_article(article_data = article_obj)
         
         return response_success(
@@ -157,8 +186,8 @@ def edit_article(article_id:int, article:ArticleCreate, common: CommonDeps = Dep
         
     except ValueError as error:
         return response_error(
-            message=error.detail,
-            status_code= error.status_code
+            message=str(error),
+            status_code=status.HTTP_400_BAD_REQUEST,
         )
     except HTTPException as error:
         return response_error(
