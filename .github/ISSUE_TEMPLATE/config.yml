@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: TechBlog Project Board
+    url: https://github.com/users/victorflipe/projects
+    about: Kanban de tarefas vinculado ao challenge-gd
+  - name: Documentação da API
+    url: http://localhost:8000/docs
+    about: Swagger local (após subir o Docker)
