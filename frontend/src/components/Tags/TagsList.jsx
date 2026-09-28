@@ -50,7 +50,7 @@ const TagsList = ({ tagsArticle, tagsSelectedArticle = [], setTagsFiltered, upda
 
     return (
         <section className=''>
-            <div className={`w-auto flex items-center h-20 ${!update ? "overflow-x-auto" : "overflow-y-auto flex-wrap gap-2 h-40"}  `}>
+            <div className={`flex items-center ${!update ? 'overflow-x-auto gap-2 py-2' : 'flex-wrap gap-2 py-2'}`}>
                 {tags.map((tag, idx) => (
                     <span key={idx} className={`tags whitespace-nowrap ${tagsSelected.map(item => item.id).includes(tag.id) ? 'tag-ativa' : ''}`} onClick={() => handleClick(tag)}>
                         {tag.tag}

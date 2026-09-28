@@ -1,68 +1,89 @@
 @import "tailwindcss";
 
-.mainContainer{
-  @apply h-full w-full flex md:flex-col justify-center items-center p-2
+@theme {
+  --font-newsreader: Newsreader, Georgia, serif;
+  --font-inter: Inter, system-ui, sans-serif;
 }
 
-.container{
-    @apply flex flex-col justify-center items-center p-2
+.mainContainer {
+  @apply min-h-[70vh] w-full flex flex-col justify-center items-center px-6;
 }
 
-.tags{
-  @apply bg-[#EDF2E8] px-4 py-2 mr-2 font-semibold rounded-full hover:cursor-pointer
+.container {
+  @apply flex flex-col justify-center items-center p-2;
 }
 
-.tag-ativa{
-  @apply text-[#67A22D] font-bold rounded-full
+.tags {
+  @apply bg-[#F2F2F2] text-[#242424] px-3 py-1 mr-2 mb-2 text-xs font-medium rounded-full hover:cursor-pointer font-inter;
 }
 
-.text-green{
-  @apply text-[#758269]
+.tag-ativa {
+  @apply bg-[#1A8917] text-white;
 }
 
-.button{
-  @apply bg-[#67A22D] text-white py-2 px-4 font-normal rounded-xl cursor-pointer
+.text-green {
+  @apply text-[#6B6B6B];
 }
 
-.button-danger{
-  @apply bg-red-500 text-white py-2 px-4 font-normal rounded-xl cursor-pointer
+.button {
+  @apply bg-[#242424] text-white py-2.5 px-5 text-sm font-medium rounded-full cursor-pointer font-inter;
 }
 
-.button-cancel{
-  @apply bg-gray-400 text-white py-2 px-4 font-normal rounded-xl cursor-pointer
+.button:hover {
+  @apply bg-black;
 }
 
-.icons{
-  @apply cursor-pointer hover:fill-[#67A22D]
+.button-accent {
+  @apply bg-[#1A8917] text-white py-2.5 px-5 text-sm font-medium rounded-full cursor-pointer font-inter;
+}
+
+.button-danger {
+  @apply bg-[#C01717] text-white py-2 px-4 text-sm font-medium rounded-full cursor-pointer font-inter;
+}
+
+.button-cancel {
+  @apply bg-transparent text-[#6B6B6B] border border-[#E6E6E6] py-2 px-4 text-sm font-medium rounded-full cursor-pointer font-inter;
+}
+
+.icons {
+  @apply cursor-pointer;
 }
 
 .article-markdown {
-  @apply text-[#1a1a1a] leading-relaxed;
+  @apply text-[#242424] leading-[1.58] text-[21px] font-newsreader;
 }
 
 .article-markdown h1,
 .article-markdown h2,
 .article-markdown h3 {
-  @apply font-semibold mt-4 mb-2;
+  @apply font-medium mt-8 mb-3 tracking-tight;
 }
 
 .article-markdown p {
-  @apply mb-3;
+  @apply mb-5;
 }
 
 .article-markdown ul,
 .article-markdown ol {
-  @apply list-disc pl-6 mb-3;
+  @apply list-disc pl-6 mb-5;
 }
 
 .article-markdown code {
-  @apply bg-[#EDF2E8] px-1 rounded text-sm;
+  @apply bg-[#F2F2F2] px-1.5 py-0.5 rounded text-sm font-inter;
 }
 
 .article-markdown pre {
-  @apply bg-[#EDF2E8] p-3 rounded overflow-x-auto mb-3;
+  @apply bg-[#F2F2F2] p-4 rounded overflow-x-auto mb-5 text-sm;
 }
 
 .article-markdown a {
-  @apply text-[#67A22D] underline;
+  @apply text-[#1A8917] underline;
+}
+
+.font-inter {
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.font-newsreader {
+  font-family: Newsreader, Georgia, serif;
 }

@@ -10,6 +10,7 @@ Aqui ficam os padrões de **Git**, **Pull Request** e **commits** adotados neste
 |---|---|
 | [Fluxo de Trabalho (Git & GitHub)](Fluxo-de-Trabalho-Git-e-GitHub.md) | Branching, PRs, code review e template de Pull Request |
 | [Padronização de Commits](Padronização-de-Commits.md) | Conventional Commits e relação com SemVer |
+| [Telas da aplicação](Telas-da-Aplicação.md) | Screenshots de cada tela do frontend |
 
 Documentação técnica do código (Docker, smoke tests, GitHub Project) permanece no repositório em `readme.md` e `docs/`.
 

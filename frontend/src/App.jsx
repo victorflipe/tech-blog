@@ -14,7 +14,7 @@ function App() {
       <BrowserRouter>
         <UserStorage>
           <Header />
-          <main className='h-full font-newsreader'>
+          <main className='min-h-[calc(100dvh-72px)] font-inter text-[#242424]'>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login/*" element={<Login />} />

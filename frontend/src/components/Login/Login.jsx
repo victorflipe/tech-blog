@@ -6,7 +6,7 @@ import NotFound from '../NotFound'
 
 const Login = () => {
     return (
-        <section className='mainContainer'>
+        <section className="w-full">
             <Routes>
                 <Route path="/" element={<LoginForm />} />
                 <Route path="/register" element={<RegisterForm />} />

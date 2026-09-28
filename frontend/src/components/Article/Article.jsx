@@ -8,7 +8,7 @@ import ProtectedRoutes from '../Helper/ProtectedRoutes'
 
 const Article = () => {
     return (
-        <section className='lg:px-[10rem]'>
+        <section className=''>
             <Routes>
                 <Route path="/" element={<ArticleList />} />
                 <Route path="/new" element={<ProtectedRoutes><ArticleNew /></ProtectedRoutes>} />

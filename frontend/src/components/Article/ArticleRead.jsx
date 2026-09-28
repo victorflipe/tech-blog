@@ -1,5 +1,4 @@
 import React, { useContext } from 'react'
-import ArticleHeader from './ArticleHeader'
 import TagsList from '../Tags/TagsList'
 import TextArea from '../Forms/TextArea'
 import useFetch from '../../hooks/useFetch'
@@ -26,26 +25,26 @@ function CommentItem({
     const canDelete = currentUserId && item.author?.id === currentUserId
 
     return (
-        <div className={depth > 0 ? 'mt-4 ml-8 border-l border-[#EDF2E8] pl-4' : 'mb-10'}>
-            <div className='flex'>
-                <img className='rounded-full w-12 h-12 object-cover' src={Avatar} alt="" />
-                <div className='w-full ml-5'>
-                    <div className='flex justify-between items-center w-full'>
-                        <div className='flex gap-2'>
-                            <p className='font-bold'>{item.author.name}</p>
-                            <p>{diffDate(item.created_at)}</p>
+        <div className={depth > 0 ? 'mt-5 ml-6 pl-4 border-l border-[#E6E6E6]' : 'py-6 border-b border-[#E6E6E6]'}>
+            <div className="flex">
+                <img className="rounded-full w-8 h-8 object-cover" src={Avatar} alt="" />
+                <div className="w-full ml-3">
+                    <div className="flex justify-between items-center w-full">
+                        <div className="flex gap-2 items-baseline font-inter">
+                            <p className="text-sm font-medium text-[#242424]">{item.author.name}</p>
+                            <p className="text-xs text-[#6B6B6B]">{diffDate(item.created_at)}</p>
                         </div>
                         {canDelete && (
                             <button type="button" onClick={() => onDelete(item.id)}>
-                                <img className='icons cursor-pointer' src={IconTrash} alt="Excluir comentário" />
+                                <img className="icons w-4 h-4" src={IconTrash} alt="Excluir comentário" />
                             </button>
                         )}
                     </div>
-                    <div>{item.comment}</div>
+                    <div className="mt-2 text-[16px] leading-relaxed text-[#242424]">{item.comment}</div>
                     {currentUserId && (
-                        <div className='mt-3'>
+                        <div className="mt-3">
                             <button type="button" className="cursor-pointer" onClick={() => onReply(item.id)}>
-                                <img className='icons' src={IconReply} alt="Responder" />
+                                <img className="icons w-4 h-4" src={IconReply} alt="Responder" />
                             </button>
                         </div>
                     )}
@@ -73,7 +72,6 @@ const ArticleRead = () => {
     const currentUser = data?.data ?? null
 
     const [isOpen, setIsOpen] = React.useState(false)
-    const [isMobile] = React.useState(() => window.innerWidth <= 768)
     const [replyToId, setReplyToId] = React.useState(null)
 
     const { request } = useFetch()
@@ -131,58 +129,76 @@ const ArticleRead = () => {
     }
 
     if (loading) {
-        return <p className="p-10 text-center">Carregando artigo...</p>
+        return <p className="p-16 text-center text-[#6B6B6B] font-newsreader text-xl">Carregando artigo...</p>
     }
 
     if (!article) {
-        return <p className="p-10 text-center">Artigo não encontrado.</p>
+        return <p className="p-16 text-center text-[#6B6B6B] font-newsreader text-xl">Artigo não encontrado.</p>
     }
 
     const isAuthor = currentUser && article.author?.id === currentUser.id
 
     return (
-        <section className=''>
-            <ArticleHeader>
-                <div className="flex items-center justify-between py-2 gap-4">
-                    <div className="flex items-center flex-1 min-w-0">
-                        <h1 className='text-3xl font-semibold pr-2 truncate'>{article.title}</h1>
-                        {!isMobile && <TagsList isActive={false} tagsArticle={article.tags} setTagsFiltered={setTagsFiltered} />}
-                    </div>
-                    {isAuthor && (
-                        <Button onClick={() => setDeleteArticleOpen(true)}>Excluir artigo</Button>
-                    )}
+        <article className="max-w-[680px] mx-auto px-5 py-12">
+            <h1 className="font-newsreader text-[40px] lg:text-[42px] leading-tight tracking-tight text-[#242424]">
+                {article.title}
+            </h1>
+
+            <div className="flex items-center justify-between gap-4 mt-6 mb-8">
+                <div>
+                    <p className="text-sm font-medium text-[#242424] font-inter">{article.author.name}</p>
+                    <p className="text-xs text-[#6B6B6B] mt-1 font-inter">{formatDate(article.created_at)}</p>
                 </div>
-            </ArticleHeader>
+                {isAuthor && (
+                    <div className="flex gap-4 text-sm font-inter">
+                        <Link to={`/articles/${article.id}/edit`} state={{ article }} className="text-[#6B6B6B] hover:text-[#242424]">
+                            Editar
+                        </Link>
+                        <button
+                            type="button"
+                            className="text-[#6B6B6B] hover:text-[#C01717] cursor-pointer"
+                            onClick={() => setDeleteArticleOpen(true)}
+                        >
+                            Excluir
+                        </button>
+                    </div>
+                )}
+            </div>
 
-            <p className='text-[#758269]'>Publicado por {article.author.name} - {formatDate(article.created_at)}</p>
-
-            {isMobile && article.tags?.length > 0 && (
-                <TagsList isActive={false} tagsArticle={article.tags} setTagsFiltered={setTagsFiltered} />
+            {article.tags?.length > 0 && (
+                <div className="mb-8">
+                    <TagsList isActive={false} tagsArticle={article.tags} setTagsFiltered={setTagsFiltered} />
+                </div>
             )}
 
-            <MarkdownContent className="mt-5">{article.content}</MarkdownContent>
+            <MarkdownContent>{article.content}</MarkdownContent>
 
-            <section className='mt-10'>
+            <section className="mt-16 pt-8 border-t border-[#E6E6E6]">
+                <h2 className="font-newsreader text-2xl mb-6">Respostas</h2>
                 {login ? (
                     <>
                         {replyToId && (
-                            <p className="text-sm text-[#758269] mb-2">
+                            <p className="text-sm text-[#6B6B6B] mb-2 font-inter">
                                 Respondendo comentário #{replyToId}{' '}
-                                <button type="button" className="underline" onClick={() => setReplyToId(null)}>Cancelar</button>
+                                <button type="button" className="underline" onClick={() => setReplyToId(null)}>
+                                    Cancelar
+                                </button>
                             </p>
                         )}
-                        <TextArea label="Comentários" placeholder="Escreva um comentário" rows={10} {...comment} />
-                        <Button onClick={onSubmitComment}>Comentar</Button>
+                        <TextArea label="Comentário" placeholder="Escreva um comentário" rows={6} {...comment} />
+                        <Button onClick={onSubmitComment}>Publicar</Button>
                     </>
                 ) : (
-                    <p className="text-[#758269]">
-                        <Link to="/login" className="text-[#67A22D] font-semibold underline">Entre</Link>
+                    <p className="text-[#6B6B6B] font-inter text-sm">
+                        <Link to="/login" className="text-[#1A8917] font-medium">
+                            Entre
+                        </Link>
                         {' '}para comentar neste artigo.
                     </p>
                 )}
             </section>
 
-            <section className='mt-10 pb-10'>
+            <section className="mt-6 pb-16">
                 {comments.map((item) => (
                     <CommentItem
                         key={item.id}
@@ -197,12 +213,12 @@ const ArticleRead = () => {
 
             {isOpen && (
                 <Modal onClose={() => setIsOpen(false)}>
-                    <div className='w-70 h-50 p-2 flex flex-col justify-center font-newsreader'>
-                        <h1 className='text-lg text-center font-semibold pb-2'>Excluir comentário</h1>
-                        <p className='text-md text-center font-base pb-6'>Tem certeza que deseja excluir o comentário?</p>
-                        <div className='flex h-12 gap-2 justify-center'>
-                            <button type="button" className='button-cancel' onClick={() => setIsOpen(false)}>Cancelar</button>
-                            <button type="button" className='button-danger' onClick={onDeleteComment}>excluir</button>
+                    <div className="w-70 p-2 flex flex-col justify-center">
+                        <h1 className="text-lg text-center font-medium pb-2">Excluir comentário</h1>
+                        <p className="text-sm text-center text-[#6B6B6B] pb-6">Tem certeza que deseja excluir o comentário?</p>
+                        <div className="flex gap-2 justify-center">
+                            <button type="button" className="button-cancel" onClick={() => setIsOpen(false)}>Cancelar</button>
+                            <button type="button" className="button-danger" onClick={onDeleteComment}>Excluir</button>
                         </div>
                     </div>
                 </Modal>
@@ -210,25 +226,25 @@ const ArticleRead = () => {
 
             {confirmDelete && (
                 <Modal onClose={() => setConfirmDelete(false)}>
-                    <div className='w-70 h-50 p-2 flex flex-col justify-center font-newsreader'>
-                        <h1 className='text-lg text-center font-semibold pb-2'>Comentário excluído com sucesso!</h1>
+                    <div className="w-70 p-2 flex flex-col justify-center">
+                        <h1 className="text-lg text-center font-medium pb-2">Comentário excluído com sucesso!</h1>
                     </div>
                 </Modal>
             )}
 
             {deleteArticleOpen && (
                 <Modal onClose={() => setDeleteArticleOpen(false)}>
-                    <div className='w-70 h-50 p-2 flex flex-col justify-center font-newsreader'>
-                        <h1 className='text-lg text-center font-semibold pb-2'>Excluir artigo</h1>
-                        <p className='text-md text-center font-base pb-6'>Esta ação não pode ser desfeita.</p>
-                        <div className='flex h-12 gap-2 justify-center'>
-                            <button type="button" className='button-cancel' onClick={() => setDeleteArticleOpen(false)}>Cancelar</button>
-                            <button type="button" className='button-danger' onClick={onDeleteArticle}>Excluir</button>
+                    <div className="w-70 p-2 flex flex-col justify-center">
+                        <h1 className="text-lg text-center font-medium pb-2">Excluir artigo</h1>
+                        <p className="text-sm text-center text-[#6B6B6B] pb-6">Esta ação não pode ser desfeita.</p>
+                        <div className="flex gap-2 justify-center">
+                            <button type="button" className="button-cancel" onClick={() => setDeleteArticleOpen(false)}>Cancelar</button>
+                            <button type="button" className="button-danger" onClick={onDeleteArticle}>Excluir</button>
                         </div>
                     </div>
                 </Modal>
             )}
-        </section>
+        </article>
     )
 }
 
