@@ -2,15 +2,20 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session, declarative_base
 import os
 
-USER = os.getenv("POSTGRES_USER")
-PASSWORD = os.getenv("POSTGRES_PASSWORD")
-HOST=os.getenv("POSTGRES_HOST")
-PORT=os.getenv("POSTGRES_PORT")
-DATABASE=os.getenv("POSTGRES_DB")
-DATABASE_URL = f'postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}'
+
+def build_database_url() -> str:
+    user = os.getenv("POSTGRES_USER", "postgres")
+    password = os.getenv("POSTGRES_PASSWORD", "postgres")
+    host = os.getenv("POSTGRES_HOST", "localhost")
+    port = os.getenv("POSTGRES_PORT", "5432")
+    database = os.getenv("POSTGRES_DB", "techblog")
+    return f"postgresql://{user}:{password}@{host}:{port}/{database}"
 
 
-engine = create_engine(DATABASE_URL, echo=True)
+DATABASE_URL = build_database_url()
+_db_echo = os.getenv("DB_ECHO", "false").lower() in ("1", "true", "yes")
+
+engine = create_engine(DATABASE_URL, echo=_db_echo)
 localSession = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
 Base = declarative_base()

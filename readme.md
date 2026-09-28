@@ -25,7 +25,7 @@ cd tech-blog
 ```bash
 cp backend/.env.example backend/.env
 ```
-Edite `backend/.env` se necessário (senha do Postgres, `SECRET_KEY`).
+Edite `backend/.env` se necessário (senha do Postgres, `SECRET_KEY`). Variáveis completas estão em `backend/.env.example`.
 
 3. Execute os containers
 ```bash
@@ -34,7 +34,7 @@ docker compose up --build -d
 
 Isso irá executar:
 - Healthcheck do Postgres antes de subir a API
-- Criação das tabelas e seed idempotente (`articles.json`)
+- **Migrations Alembic** (`alembic upgrade head`) e seed idempotente (`articles.json`)
 - Backend FastAPI na porta **8000**
 - Frontend Vite na porta **5173**
 - Postgres no host na porta **5434** (mapeamento `5434→5432` no container; evita conflito se já existir Postgres em 5432)
@@ -55,9 +55,53 @@ http://localhost:8000/docs
 
 ```bash
 docker compose down -v
-# No serviço api, defina DEV_RESET=1 no .env ou environment para drop_all no init_db
+# Opcional: DEV_RESET=1 no backend/.env remove tabelas antes do Alembic no próximo up
 docker compose up --build -d
 ```
+
+### Banco já existente (upgrade para Alembic)
+
+Se o Postgres já tinha tabelas criadas com `create_all` e o `alembic upgrade` falhar com “relation already exists”:
+
+```bash
+docker exec techblog_api alembic stamp head
+docker compose restart api
+```
+
+Ou recrie o volume com `docker compose down -v`.
+
+### Migrations (Alembic)
+
+Com o stack no ar ou Postgres acessível:
+
+```bash
+cd backend
+alembic upgrade head          # aplicar
+alembic revision --autogenerate -m "descricao"   # nova migration (dev)
+```
+
+## Testes automatizados (Fase 3)
+
+**TestClient + Postgres** (CI e local; usa o banco `techblog_test` por padrão):
+
+```bash
+# Crie o banco de teste uma vez (Docker):
+docker exec techblog_db psql -U postgres -c "CREATE DATABASE techblog_test;"
+
+cd backend
+pip install -r requirements.txt
+set PYTEST_POSTGRES_HOST=localhost
+set PYTEST_POSTGRES_PORT=5434
+pytest app/tests/test_api_auth.py app/tests/test_api_articles.py app/tests/test_api_comments.py -v
+```
+
+**Integração E2E** (API em `http://localhost:8000`):
+
+```bash
+docker exec -e RUN_INTEGRATION=1 techblog_api pytest app/tests/test_phase1_integration.py app/tests/test_phase2_integration.py -v
+```
+
+A pipeline **GitHub Actions** (`.github/workflows/ci.yml`) roda migrations, pytest (TestClient), compile check, build Docker e `npm run lint` no frontend.
 
 ## Testes smoke (Fase 1)
 
