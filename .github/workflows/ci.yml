@@ -47,7 +47,7 @@ jobs:
       - name: Apply migrations
         run: alembic upgrade head
       - name: Run API tests (TestClient)
-        run: pytest app/tests/test_api_auth.py app/tests/test_api_articles.py app/tests/test_api_comments.py -v
+        run: pytest app/tests/test_api_auth.py app/tests/test_api_articles.py app/tests/test_api_comments.py app/tests/test_api_health.py -v
       - name: Python compile check
         run: python -m compileall app
 

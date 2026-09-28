@@ -21,11 +21,12 @@ git clone https://github.com/victorflipe/tech-blog.git
 cd tech-blog
 ```
 
-2. Configure o ambiente da API:
+2. Configure o ambiente:
 ```bash
 cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
 ```
-Edite `backend/.env` se necessário (senha do Postgres, `SECRET_KEY`). Variáveis completas estão em `backend/.env.example`.
+Edite `backend/.env` se necessário (senha do Postgres, `SECRET_KEY`). No frontend, `VITE_API_URL` aponta para a API (padrão `http://localhost:8000`).
 
 3. Execute os containers
 ```bash
@@ -50,6 +51,14 @@ http://localhost:5173
 ```bash
 http://localhost:8000/docs
 ```
+
+### Leitura pública vs área autenticada (Fase 4)
+
+- **Público (sem login):** listar artigos, ler artigo, listar comentários e tags.
+- **Autenticado:** criar/editar/excluir artigos, comentar, responder threads, cadastro e perfil.
+- **Health check:** `GET http://localhost:8000/health` (ping ao Postgres; usado no healthcheck do container `api`).
+- **Rate limit:** `POST /login/` limitado por IP (`LOGIN_RATE_LIMIT`, padrão `5/minute`).
+- **Markdown:** conteúdo dos artigos é renderizado em Markdown na leitura; preview opcional no formulário.
 
 ### Reset completo do banco (desenvolvimento)
 

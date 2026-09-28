@@ -36,12 +36,19 @@ def test_register_user(client: TestClient):
     assert response.json()["data"]["email"] == "novo.usuario@teste.com"
 
 
-def test_protected_route_without_token(client: TestClient):
-    response = client.get("/articles/1")
-    assert response.status_code == 401
-
-
-def test_protected_route_with_token(client: TestClient, author_user: UserModel):
-    headers = auth_header(client, author_user.email)
-    response = client.get("/articles/", headers=headers, params={"limit": 5})
+def test_public_list_articles_without_token(client: TestClient):
+    response = client.get("/articles/", params={"limit": 5})
     assert response.status_code == 200
+
+
+def test_create_article_requires_auth(client: TestClient):
+    response = client.post(
+        "/articles/",
+        json={
+            "title": "Sem auth",
+            "content": "conteudo",
+            "image": "",
+            "tags": [],
+        },
+    )
+    assert response.status_code == 401

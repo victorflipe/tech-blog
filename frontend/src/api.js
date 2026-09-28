@@ -62,9 +62,6 @@ export const GET_ARTICLES = (skip, limit, { q, tags } = {}) => {
         url: API_URL + `/articles?${params.toString()}`,
         options: {
             method: 'get',
-            headers: {
-                ...authHeaders(),
-            },
         },
     }
 }
@@ -74,9 +71,6 @@ export const GET_ARTICLE = (articleId) => {
         url: API_URL + `/articles/${articleId}`,
         options: {
             method: 'get',
-            headers: {
-                ...authHeaders(),
-            },
         },
     }
 }
@@ -98,9 +92,6 @@ export const GET_COMMENTS = (articleId) => {
         url: API_URL + `/articles/${articleId}/comments`,
         options: {
             method: 'get',
-            headers: {
-                ...authHeaders(),
-            },
         },
     }
 }

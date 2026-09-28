@@ -13,7 +13,8 @@ import { formatDate, diffDate } from '../../utils/date'
 import Modal from '../Modal/Modal'
 import Avatar from '@/assets/avatar.svg'
 import { UserContext } from '@/UserContext'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import MarkdownContent from '../Markdown/MarkdownContent'
 
 function CommentItem({
     item,
@@ -41,11 +42,13 @@ function CommentItem({
                         )}
                     </div>
                     <div>{item.comment}</div>
-                    <div className='mt-3'>
-                        <button type="button" className="cursor-pointer" onClick={() => onReply(item.id)}>
-                            <img className='icons' src={IconReply} alt="Responder" />
-                        </button>
-                    </div>
+                    {currentUserId && (
+                        <div className='mt-3'>
+                            <button type="button" className="cursor-pointer" onClick={() => onReply(item.id)}>
+                                <img className='icons' src={IconReply} alt="Responder" />
+                            </button>
+                        </div>
+                    )}
                     {item.replies?.map((reply) => (
                         <CommentItem
                             key={reply.id}
@@ -65,7 +68,7 @@ function CommentItem({
 const ArticleRead = () => {
     const { article, loading } = useArticle()
     const comment = useForm()
-    const { data } = useContext(UserContext)
+    const { data, login } = useContext(UserContext)
     const navigate = useNavigate()
     const currentUser = data?.data ?? null
 
@@ -157,17 +160,26 @@ const ArticleRead = () => {
                 <TagsList isActive={false} tagsArticle={article.tags} setTagsFiltered={setTagsFiltered} />
             )}
 
-            <article className='mt-5'>{article.content}</article>
+            <MarkdownContent className="mt-5">{article.content}</MarkdownContent>
 
             <section className='mt-10'>
-                {replyToId && (
-                    <p className="text-sm text-[#758269] mb-2">
-                        Respondendo comentário #{replyToId}{' '}
-                        <button type="button" className="underline" onClick={() => setReplyToId(null)}>Cancelar</button>
+                {login ? (
+                    <>
+                        {replyToId && (
+                            <p className="text-sm text-[#758269] mb-2">
+                                Respondendo comentário #{replyToId}{' '}
+                                <button type="button" className="underline" onClick={() => setReplyToId(null)}>Cancelar</button>
+                            </p>
+                        )}
+                        <TextArea label="Comentários" placeholder="Escreva um comentário" rows={10} {...comment} />
+                        <Button onClick={onSubmitComment}>Comentar</Button>
+                    </>
+                ) : (
+                    <p className="text-[#758269]">
+                        <Link to="/login" className="text-[#67A22D] font-semibold underline">Entre</Link>
+                        {' '}para comentar neste artigo.
                     </p>
                 )}
-                <TextArea label="Comentários" placeholder="Escreva um comentário" rows={10} {...comment} />
-                <Button onClick={onSubmitComment}>Comentar</Button>
             </section>
 
             <section className='mt-10 pb-10'>
