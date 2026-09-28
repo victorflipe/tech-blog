@@ -17,8 +17,8 @@ Projeto MVP para Compartilhamento de Artigos onde é possível:
 
 1. Clone o repositório:
 ```bash
-git clone https://github.com/victorflipe/challenge-gd.git
-cd challenge-gd
+git clone https://github.com/victorflipe/tech-blog.git
+cd tech-blog
 ```
 
 2. Configure o ambiente da API:

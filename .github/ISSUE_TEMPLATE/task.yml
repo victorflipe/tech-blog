@@ -1,0 +1,39 @@
+name: Task
+description: Nova tarefa de desenvolvimento
+title: "[Task] "
+labels:
+  - task
+body:
+  - type: dropdown
+    id: fase
+    attributes:
+      label: Fase
+      options:
+        - "1 - Estabilizar MVP"
+        - "2 - Completar funcionalidades"
+        - "3 - Qualidade e CI"
+        - "4 - Polish"
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridade
+      options:
+        - P0
+        - P1
+        - P2
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição
+      description: O que fazer e critérios de aceite
+    validations:
+      required: true
+  - type: textarea
+    id: files
+    attributes:
+      label: Arquivos / áreas
+      description: Caminhos ou módulos afetados

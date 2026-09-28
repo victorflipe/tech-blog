@@ -3,3 +3,8 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# Clones locais de wikis GitHub (publicar via git push, não versionar)
+challenge-gd.wiki/
+tech-blog.wiki/
+.docawave-wiki/
