@@ -1,29 +1,21 @@
 .modal {
-    /* background-color: rgba(0, 0, 0, 0.6); */
-    /* backdrop-filter: blur(.2rem); */
-    /* background-color: grayscale(10%) */
+    background-color: rgba(36, 36, 36, 0.35);
 }
 
-.close{
-    background-color: white;
+.close {
+    background-color: transparent;
     margin: 0.2rem;
     width: 30px;
     height: 30px;
     border-radius: 50%;
 }
 
-/* Adicionar animação de hover ao passar o mouse no ícone para fechamento */
-
-.close:hover{
+.close:hover {
     cursor: pointer;
-    /* transition: transform .2s ease;
-    transform-origin: left top; */
 }
 
-.modalBox{
+.modalBox {
     background-color: #fff;
-    /* backdrop-filter: blur(.5rem); */
-    border: 1px solid #67A22D;
-    /* box-shadow: 1px 1px 2rem rgb(49, 49, 49); */
-
+    border: 1px solid #E6E6E6;
+    border-radius: 8px;
 }

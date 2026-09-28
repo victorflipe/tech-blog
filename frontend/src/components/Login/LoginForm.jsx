@@ -7,22 +7,20 @@ import { UserContext } from '../../UserContext'
 import Modal from '../Modal/Modal'
 
 const LoginForm = () => {
-
     const email = useForm()
     const password = useForm()
     const { userLogin, error } = React.useContext(UserContext)
     const [message, setMessage] = React.useState('')
-    const [isOpen, setIsOpen] = React.useState(false);
+    const [isOpen, setIsOpen] = React.useState(false)
 
     const handleLogin = async (event) => {
         event.preventDefault()
 
-        try{
-
+        try {
             if (email.validate() && password.validate()) {
                 await userLogin(email.value, password.value)
-              
-                if(error){
+
+                if (error) {
                     setMessage(error)
                     setIsOpen(true)
                 }
@@ -31,29 +29,44 @@ const LoginForm = () => {
             setMessage('Erro ao efetuar login')
             setIsOpen(true)
         }
-
     }
 
-    
     return (
-        <section className='w-full lg:py-10'>
-            <h1 className='text-4xl text-center font-semibold pb-5'>Bem vindo de volta</h1>
-            <div className='mainContainer'>
-                <form onSubmit={handleLogin} className='w-[40rem]'>
-                    <Input label={"Email"} name="email" {...email} placeholder="Email" h={"h-[2rem]"}/>
-                    <Input label={"Senha"} name="senha" {...password} placeholder="Senha" h={"h-[2rem]"}/>
-                    <Button classButton={"w-full"}>Entrar</Button>
-                </form>
-                <p className="text-center mt-4">
-                    Não tem conta? <Link to="/login/register" className="underline">Cadastre-se</Link>
-                </p>
+        <section className="min-h-[calc(100vh-72px)] grid lg:grid-cols-2">
+            <div className="hidden lg:flex bg-[#F9F7F4] px-16 items-center">
+                <blockquote className="max-w-md">
+                    <p className="font-newsreader italic text-3xl text-[#242424] leading-snug">
+                        A escrita clara é o reflexo de um pensamento rigoroso.
+                    </p>
+                    <p className="mt-6 text-sm text-[#6B6B6B]">Editorial TechBlog</p>
+                </blockquote>
             </div>
 
-            {isOpen && <Modal onClose={() => setIsOpen(false)} >
-                <div className='w-70 h-50 p-2 flex flex-col justify-center font-newsreader'>
-                    <h1 className={`text-lg text-center font-semibold pb-2 text-red-600`}>{message}</h1>
+            <div className="flex items-center justify-center px-6 py-16">
+                <div className="w-full max-w-[420px]">
+                    <h1 className="font-newsreader text-[40px] tracking-tight mb-2">Bem-vindo de volta</h1>
+                    <p className="text-[#6B6B6B] text-sm mb-8">Entre para escrever e comentar.</p>
+                    <form onSubmit={handleLogin}>
+                        <Input label="Email" name="email" {...email} placeholder="seu@email.com" />
+                        <Input label="Senha" name="senha" {...password} type="password" placeholder="Senha" />
+                        <Button classButton="w-full">Entrar</Button>
+                    </form>
+                    <p className="text-center mt-6 text-sm text-[#6B6B6B]">
+                        Não tem conta?{' '}
+                        <Link to="/login/register" className="text-[#1A8917] font-medium">
+                            Cadastre-se
+                        </Link>
+                    </p>
                 </div>
-            </Modal>}
+            </div>
+
+            {isOpen && (
+                <Modal onClose={() => setIsOpen(false)}>
+                    <div className="w-70 p-2 flex flex-col justify-center">
+                        <h1 className="text-lg text-center font-medium pb-2 text-red-600">{message}</h1>
+                    </div>
+                </Modal>
+            )}
         </section>
     )
 }

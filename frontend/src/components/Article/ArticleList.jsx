@@ -1,5 +1,4 @@
 import React from 'react'
-import ArticleHeader from './ArticleHeader'
 import Button from '../Forms/Button'
 import { useNavigate } from 'react-router-dom'
 import TagsList from '../Tags/TagsList'
@@ -11,7 +10,6 @@ import useForm from '../../hooks/useForm'
 import { UserContext } from '../../UserContext'
 
 const ArticleList = () => {
-
   const navigate = useNavigate()
   const { login } = React.useContext(UserContext)
   const { request } = useFetch()
@@ -45,38 +43,36 @@ const ArticleList = () => {
   }, [page, searchQuery, tagsQuery])
 
   return (
-    <section className='mb-10 md:px-[5rem]'>
-      <ArticleHeader>
-        <div className="flex justify-between items-center py-2">
-          <h1 className='text-3xl font-semibold'>{"Todos os Artigos"}</h1>
-          {login && (
-            <Button onClick={() => navigate('/articles/new')}>Criar artigo</Button>
-          )}
+    <section className="max-w-[1192px] mx-auto px-5 lg:px-8 py-10">
+      <div className="flex justify-between items-end gap-4 mb-8">
+        <div>
+          <h1 className="font-newsreader text-4xl tracking-tight">Para você</h1>
+          <p className="text-sm text-[#6B6B6B] mt-2">Histórias da comunidade TechBlog</p>
         </div>
-      </ArticleHeader>
-
-      <div className='mt-5'>
-        <Input placeholder={"Pesquisar (mín. 2 caracteres)"} name="Pesquisar" {...filter} error={false} />
-        <TagsList setTagsFiltered={setTagsFiltered} />
-
-        <ArticleListItems articles={articles} onDeleted={fetchArticles} />
+        {login && (
+          <Button onClick={() => navigate('/articles/new')}>Escrever</Button>
+        )}
       </div>
 
+      <Input placeholder="Pesquisar (mín. 2 caracteres)" name="Pesquisar" {...filter} error={false} />
+      <TagsList setTagsFiltered={setTagsFiltered} />
+      <ArticleListItems articles={articles} onDeleted={fetchArticles} />
+
       {pagination && pagination.pages > 1 && (
-        <div className="flex gap-2 mt-10 pb-10 justify-center">
+        <div className="flex gap-2 mt-10 pb-10 justify-center font-inter">
           {Array.from({ length: pagination.pages }, (_, idx) => (
             <button
               key={idx}
               onClick={() => setPage(idx + 1)}
-              className={`px-3 py-1 rounded-full cursor-pointer ${page === idx + 1 ? "bg-[#EDF2E8]" : ""
-                }`}
+              className={`px-3 py-1 rounded-full cursor-pointer text-sm ${
+                page === idx + 1 ? 'bg-[#F2F2F2] text-[#242424]' : 'text-[#6B6B6B]'
+              }`}
             >
               {idx + 1}
             </button>
           ))}
         </div>
       )}
-
     </section>
   )
 }

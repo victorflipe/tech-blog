@@ -46,26 +46,35 @@ const RegisterForm = () => {
     }
 
     return (
-        <section className='w-full lg:py-10'>
-            <h1 className='text-4xl text-center font-semibold pb-5'>Criar conta</h1>
-            <div className='mainContainer'>
-                <form onSubmit={handleRegister} className='w-[40rem]'>
-                    <Input label="Nome" name="name" {...name} placeholder="Seu nome" h="h-[2rem]" />
-                    <Input label="Email" name="email" {...email} placeholder="Email" h="h-[2rem]" />
-                    <Input label="Senha" name="password" {...password} placeholder="Senha" h="h-[2rem]" />
+        <section className="min-h-[calc(100vh-72px)] flex items-center justify-center px-6 py-16">
+            <div className="w-full max-w-[420px]">
+                <h1 className="font-newsreader text-[40px] tracking-tight mb-2">Crie sua conta</h1>
+                <p className="text-[#6B6B6B] text-sm mb-8">
+                    Junte-se para ler, escrever e compartilhar ideias.
+                </p>
+                <form onSubmit={handleRegister}>
+                    <Input label="Nome" name="name" {...name} placeholder="Seu nome" />
+                    <Input label="Email" name="email" {...email} placeholder="seu@email.com" />
+                    <Input label="Senha" name="password" {...password} type="password" placeholder="Mínimo 8 caracteres" />
                     <Button classButton="w-full" disabled={loading}>
                         {loading ? 'Cadastrando...' : 'Cadastrar'}
                     </Button>
                 </form>
-                <p className="text-center mt-4">
-                    Já tem conta? <Link to="/login" className="underline">Entrar</Link>
+                <p className="text-center mt-6 text-sm text-[#6B6B6B]">
+                    Já tem conta?{' '}
+                    <Link to="/login" className="text-[#1A8917] font-medium">
+                        Entrar
+                    </Link>
+                </p>
+                <p className="text-center mt-8 text-xs text-[#6B6B6B]">
+                    Ao continuar, você concorda com os termos do TechBlog.
                 </p>
             </div>
 
             {isOpen && (
                 <Modal onClose={() => setIsOpen(false)}>
-                    <div className='w-70 h-50 p-2 flex flex-col justify-center font-newsreader'>
-                        <h1 className='text-lg text-center font-semibold pb-2 text-red-600'>{message}</h1>
+                    <div className="w-70 p-2 flex flex-col justify-center">
+                        <h1 className="text-lg text-center font-medium pb-2 text-red-600">{message}</h1>
                     </div>
                 </Modal>
             )}

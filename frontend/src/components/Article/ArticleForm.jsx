@@ -3,7 +3,6 @@ import useForm from '../../hooks/useForm'
 import Input from '../Forms/Input'
 import TextArea from '../Forms/TextArea'
 import TagsList from '../Tags/TagsList'
-import ArticleHeader from './ArticleHeader'
 import Button from '../Forms/Button'
 import { POST_ARTICLE, UPDATE_ARTICLE } from '../../api'
 import useFetch from '../../hooks/useFetch'
@@ -12,24 +11,22 @@ import Modal from '../Modal/Modal'
 import MarkdownContent from '../Markdown/MarkdownContent'
 
 const ArticleForm = ({ article }) => {
-
     const title = useForm()
     const image = useForm()
     const content = useForm('')
     const { request } = useFetch()
     const navigate = useNavigate()
-    const [isOpen, setIsOpen] = React.useState(false);
-    const [message, setMessage] = React.useState('');
+    const [isOpen, setIsOpen] = React.useState(false)
+    const [message, setMessage] = React.useState('')
     const [tagsFiltered, setTagsFiltered] = React.useState([])
-    const [isMobile] = React.useState(() => window.innerWidth <= 768)
     const [showPreview, setShowPreview] = React.useState(false)
 
-    const titleHeader = !article ? "Novo artigo" : "Editar artigo"
-    const textButton = !article ? "Criar artigo" : "Salvar artigo"
+    const titleHeader = !article ? 'Escrever' : 'Editar artigo'
+    const textButton = !article ? 'Publicar' : 'Salvar'
 
     const handleSubmit = async (event) => {
         event.preventDefault()
-        if(!title.validate() || !content.validate()){
+        if (!title.validate() || !content.validate()) {
             return
         }
 
@@ -37,10 +34,8 @@ const ArticleForm = ({ article }) => {
             title: title.value,
             content: content.value,
             image: image.value,
-            tags: tagsFiltered.map(tagItem => tagItem.tag)
+            tags: tagsFiltered.map((tagItem) => tagItem.tag),
         }
-
-        // return
 
         if (article) {
             const { url, options } = UPDATE_ARTICLE(article.id, createObj)
@@ -53,8 +48,6 @@ const ArticleForm = ({ article }) => {
             setMessage(json.message)
             setIsOpen(true)
         }
-
-
     }
 
     const handleClickModal = () => {
@@ -72,50 +65,46 @@ const ArticleForm = ({ article }) => {
     }, [])
 
     return (
-        <section className='w-full lg:mt-5 md:px-[5rem]'>
-
-            <ArticleHeader>
-                <div className="flex items-center justify-between py-2">
-                    <h1 className='text-3xl font-semibold'>{titleHeader}</h1>
-                    {!isMobile && <Button onClick={handleSubmit}>{textButton}</Button>}
-                </div>
-            </ArticleHeader>
+        <section className="max-w-[728px] mx-auto px-5 py-10">
+            <div className="flex items-center justify-between mb-8">
+                <h1 className="font-newsreader text-4xl tracking-tight">{titleHeader}</h1>
+                <Button onClick={handleSubmit}>{textButton}</Button>
+            </div>
 
             <form onSubmit={handleSubmit}>
+                <Input label="Título *" name="title" {...title} placeholder="Título do artigo" />
+                <Input label="Imagem" name="image" {...image} placeholder="URL da imagem" error={false} />
 
-                <Input label={"Título do artigo *"} name="title" {...title} placeholder="Título" />
-
-                <Input label={"Imagem do artigo"} name="image" {...image} placeholder="URL da imagem" error={false}/>
-
-                <div className='mb-5'>
+                <div className="mb-5">
+                    <p className="text-[13px] font-medium mb-2 font-inter">Tags</p>
                     <TagsList update={true} tagsSelectedArticle={article ? article.tags : []} setTagsFiltered={setTagsFiltered} />
                 </div>
 
                 <TextArea label="Conteúdo * (Markdown)" name="conteúdo" placeholder="Escreva aqui seu artigo" {...content} />
 
-                <div className="mb-5">
+                <div className="mb-8">
                     <button
                         type="button"
-                        className="text-[#67A22D] font-semibold underline cursor-pointer"
+                        className="text-[#1A8917] font-medium text-sm cursor-pointer font-inter"
                         onClick={() => setShowPreview((prev) => !prev)}
                     >
                         {showPreview ? 'Ocultar preview' : 'Preview Markdown'}
                     </button>
                     {showPreview && (
-                        <div className="mt-3 p-4 border border-[#EDF2E8] rounded-xl">
+                        <div className="mt-4 pt-4 border-t border-[#E6E6E6]">
                             <MarkdownContent>{content.value}</MarkdownContent>
                         </div>
                     )}
                 </div>
-
-                {isMobile && <Button classButton={"w-full"} onClick={handleSubmit}>{textButton}</Button>}
             </form>
 
-            {isOpen && <Modal onClose={handleClickModal} >
-                <div className='w-70 h-50 p-2 flex flex-col justify-center font-newsreader'>
-                    <h1 className={`text-lg text-center font-semibold pb-2`}>{message}</h1>
-                </div>
-            </Modal>}
+            {isOpen && (
+                <Modal onClose={handleClickModal}>
+                    <div className="w-70 p-2 flex flex-col justify-center">
+                        <h1 className="text-lg text-center font-medium pb-2">{message}</h1>
+                    </div>
+                </Modal>
+            )}
         </section>
     )
 }

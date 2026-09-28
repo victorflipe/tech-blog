@@ -1,46 +1,45 @@
 .wrapper {
-    margin-bottom: 1rem;
-    font-weight: 600;
+    margin-bottom: 1.25rem;
+    font-family: Inter, system-ui, sans-serif;
 }
 
 .input {
-    border: 1px solid #eee;
+    border: 1px solid #E6E6E6;
     display: block;
     width: 100%;
-    height: 4rem;
+    height: 48px;
     font-size: 1rem;
     font-weight: 400;
-    padding: .8rem;
-    border-radius: .85rem;
-    background: #EDF2E8;
-    transition: 0.2s
+    padding: 0 0.9rem;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #242424;
+    transition: 0.15s;
 }
 
 .input::placeholder {
-    color: #73964F;
+    color: #9A9A9A;
     font-weight: 400;
-    font-size: 1rem
 }
 
-
-.input:focus,
-.input:hover {
+.input:focus {
     outline: none;
-    border-color: #73964F;
-    background: white;
-    box-shadow: 0 0 0 2px #73964F;
+    border-color: #242424;
+    box-shadow: 0 0 0 1px #242424;
 }
 
 .label {
     display: block;
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 0.8125rem;
+    font-weight: 500;
     line-height: 1;
-    padding-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    color: #242424;
 }
 
 .error {
-    color: #f31;
-    font-size: .85rem;
-    margin-top: .25rem
+    color: #C01717;
+    font-size: 0.8rem;
+    margin-top: 0.35rem;
+    font-weight: 400;
 }
