@@ -11,26 +11,22 @@ const diffDate = (dateString) => {
     const dateNow = new Date()
     const date = new Date(dateString)
 
-    const diffDate = dateNow - date
+    const diffMs = dateNow - date
 
-    let dateConverted = Math.floor(diffDate / (1000 * 60 * 60 * 24))
+    let diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
 
-    if (dateConverted <= 0) return "hoje";
-    if (dateConverted === 1) return "1d";
-    if (dateConverted < 30) return `${dateConverted} d`;
+    if (diffDays <= 0) return "hoje";
+    if (diffDays === 1) return "1d";
+    if (diffDays < 30) return `${diffDays} d`;
 
+    const diffMonths = Math.floor(diffDays / 30);
+    if (diffMonths === 1) return "1m";
+    if (diffMonths < 12) return `${diffMonths}m`;
 
-    dateConverted = Math.floor(diffDays / 30);
-    if (dateConverted === 1) return "1m";
-    if (dateConverted < 12) return `${dateConverted}m`;
-
-    dateConverted = Math.floor(diffDays / 365);
+    const diffYears = Math.floor(diffDays / 365);
     if (diffYears === 1) return "1a";
 
-    return dateConverted;
-
+    return `${diffYears}a`;
 }
-
-
 
 export { formatDate, diffDate }

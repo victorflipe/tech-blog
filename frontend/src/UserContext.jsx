@@ -2,6 +2,8 @@ import React from 'react'
 import { GET_USER, LOGIN_USER } from './api'
 import { useNavigate } from 'react-router-dom'
 
+// Context exportado junto ao provider (padrão do projeto).
+// eslint-disable-next-line react-refresh/only-export-components
 export const UserContext = React.createContext()
 
 export const UserStorage = ({ children }) => {
@@ -39,7 +41,7 @@ export const UserStorage = ({ children }) => {
             }
         }
         autoLogin()
-    }, [])
+    }, [userLogout])
 
     const getUser = async () => {
         const { url, options } = GET_USER()

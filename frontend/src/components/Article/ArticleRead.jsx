@@ -73,7 +73,7 @@ const ArticleRead = () => {
     const currentUser = data?.data ?? null
 
     const [isOpen, setIsOpen] = React.useState(false)
-    const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768)
+    const [isMobile] = React.useState(() => window.innerWidth <= 768)
     const [replyToId, setReplyToId] = React.useState(null)
 
     const { request } = useFetch()
@@ -81,7 +81,7 @@ const ArticleRead = () => {
     const [commentDelete, setCommentDelete] = React.useState(null)
     const [confirmDelete, setConfirmDelete] = React.useState(false)
     const [deleteArticleOpen, setDeleteArticleOpen] = React.useState(false)
-    const [tagsFiltered, setTagsFiltered] = React.useState([])
+    const [, setTagsFiltered] = React.useState([])
 
     async function fetchComments() {
         if (!article?.id) return
